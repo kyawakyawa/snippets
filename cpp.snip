@@ -1,0 +1,409 @@
+snippet     kyopuro
+abbr        #include<bits/stdc++.h>... REP etc...
+options     head
+    #include<bits/stdc++.h>
+    typedef long long ll;
+    typedef unsigned long long ull;
+    using namespace std;
+    #define pb push_back
+    int dy[]={0, 0, 1, -1, 1, 1, -1, -1};
+    int dx[]={1, -1, 0, 0, 1, -1, -1, 1};
+
+    #define FOR(i,a,b) for (int i=(a);i<(b);i++)
+    #define RFOR(i,a,b) for (int i=(b)-1;i>=(a);i--)
+    #define REP(i,n) for (int i=0;i<(n);i++)
+    #define RREP(i,n) for (int i=(n)-1;i>=0;i--)
+    #define mp make_pair
+    #define fi first
+    #define sc second
+    ${0:TARGET}
+    int main(){
+    }
+
+snippet     kyopuro-poj
+abbr        #include<cstdio.h>... REP etc...
+options     head
+    #include<cstdio>
+    #include<cstdlib>
+    #include<cstring>
+    #include<cmath>
+    #include<climits>
+    #include<iostream>
+    #include<algorithm>
+    #include<stack>
+    #include<queue>
+    #include<vector>
+    #include<list>
+    #include<map>
+    #include<set>
+    #include<complex>
+
+    typedef long long ll;
+    typedef unsigned long long ull;
+    using namespace std;
+    #define pb push_back
+    int dy[]={0, 0, 1, -1, 1, 1, -1, -1};
+    int dx[]={1, -1, 0, 0, 1, -1, -1, 1};
+
+    #define FOR(i,a,b) for (int i=(a);i<(b);i++)
+    #define RFOR(i,a,b) for (int i=(b)-1;i>=(a);i--)
+    #define REP(i,n) for (int i=0;i<(n);i++)
+    #define RREP(i,n) for (int i=(n)-1;i>=0;i--)
+    #define mp make_pair
+    #define fi first
+    #define sc second
+
+    int main(){
+        ${0:TARGET}
+    }
+
+snippet     Bellman-Ford
+abbr        Bellman-Ford
+options     head
+    // 頂点fromから頂点toへのコストcostの辺
+    struct edge { int from, to, cost; };
+    edge es[MAX_E]; // 辺
+    int d[MAX_V]; // 最短距離
+    int V, E; // Vは頂点数、Eは辺数
+    // s番目の頂点から各頂点への最短距離を求める
+    bool shortest_path(int s) {//負のがあるなら閉路ならtrueを返す
+        for (int i = 0; i < V; i++) d[i] = INF;
+        d[s] = 0;
+        int cou = 0;
+        while (true) {
+            if(cou >= V)
+                return true;
+            bool update = false;
+            for (int i = 0; i < E; i++) {
+                edge e = es[i];
+                if (d[e.from] != INF && d[e.to] > d[e.from] + e.cost) {
+                    d[e.to] = d[e.from] + e.cost;
+                    update = true;
+                }
+            }
+            cou++;
+            if (!update) break;
+        }
+        return false;
+    }
+
+
+
+snippet     Dijkstra-by-list
+abbr        Dijkstra-by-list
+options     head
+    struct edge { int to, cost; };
+    typedef pair<int, int> P;
+    int V;
+    vector<edge> G[${1:MAX_V}];
+    int d[${2:MAX_V}];
+    void dijkstra(int s) {
+        priority_queue<P, vector<P>, greater<P> > que;
+        fill(d, d + V, INF);
+        d[s] = 0;
+        que.push(P(0, s));
+        while (!que.empty()) {
+            P p = que.top(); que.pop();
+            int v = p.second;
+            if (d[v] < p.first) continue;
+            for (int i = 0; i < G[v].size(); i++) {
+                edge e = G[v][i];
+                if (d[e.to] > d[v] + e.cost) {
+                    d[e.to] = d[v] + e.cost;
+                    que.push(P(d[e.to], e.to));
+                }
+            }
+        }
+    }
+
+snippet     Dijkstra-by-mat
+abbr        Dijkstra-by-mat
+options     head
+    //未デバッグ
+    int cost[MAX_V][MAX_V]; // cost[u][v]は辺e=(u,v)のコスト(存在しない場合はINF)
+    int d[MAX_V]; // 頂点sからの最短距離
+    bool used[MAX_V]; // すでに使われたかのフラグ
+    int V; // 頂点数
+    // 始点sから各頂点への最短距離を求める
+    void dijkstra(int s) {
+        fill(d, d + V, INF);
+        fill(used, used + V, false);
+        d[s] = 0;
+        while(true) {
+            int v = -1;
+            // まだ使われていない頂点のうち距離が最小のものを探す
+            for (int u = 0; u < V; u++) {
+                if (!used[u] && (v == -1 || d[u] < d[v])) v = u;
+            }
+            if (v == -1) break;
+            used[v] = true;
+            for (int u = 0; u < V; u++) {
+                d[u] = min(d[u], d[v] + cost[v][u]);
+            }
+        }
+    }
+
+
+snippet     Prime
+abbr        Prime-by-mat
+options     head
+    int cost[MAX_V][MAX_V]; // cost[u][v]は辺e=(u,v)のコスト(存在しない場合はINF)
+    int mincost[MAX_V]; // 集合Xからの辺の最小コスト
+    bool used[MAX_V]; // 頂点iがXに含まれているか
+    int V; // 頂点数
+    int prim() {
+        for (int i = 0; i < V; ++i) {
+            mincost[i] = INF;
+            used[i] = false;
+        }
+        mincost[0] = 0;
+        int res = 0;
+        while(true) {
+            int v = -1;
+            // Xに属さない頂点のうちXからの辺のコストが最小になる頂点を探す
+            for (int u = 0; u < V; u++) {
+                if (!used[u] && (v == -1 || mincost[u] < mincost[v])) v = u;
+            }
+            if (v == -1) break;
+            used[v] = true; // 頂点vをXに追加
+            res += mincost[v]; // 辺のコストを加える
+            for (int u = 0; u < V; u++) {
+                mincost[u] = min(mincost[u], cost[v][u]);
+            }
+        }
+        return res;
+    }
+
+snippet     Kruskal
+abbr        Kruskal-by-edge
+options     head
+    struct edge { int u, v, cost; };//無向でも一つでいい
+    bool comp(const edge& e1, const edge& e2) {
+        return e1.cost < e2.cost;
+    }
+    edge es[MAX_E];
+    int V, E; // 頂点数と辺数
+    int kruskal() {
+        sort(es, es + E, comp); // edge.costが小さい順にソートする
+        init(V); // Union-Findの初期化
+        int res = 0;
+        for (int i = 0; i < E; i++) {
+            edge e = es[i];
+            if (!same(e.u, e.v)) {
+                unite(e.u, e.v);
+                res += e.cost;
+            }
+        }
+        return res;
+    }
+
+snippet     Convolution
+abbr        Convolution
+options     head
+    typedef double R;
+    typedef complex<R> C;
+
+    void bitrev(C a[],ll N,ll index){
+        C *b = (C*)malloc(N * sizeof(C));
+        REP(i,N){
+            ll k = 0,l = i;
+            REP(j,index){
+                k *= 2;
+                k += (l & 1);
+                l /= 2;
+            }
+            b[k] = a[i];
+        }
+        REP(i,N){
+            a[i] = b[i];
+        }
+        free(b);
+    }
+
+    void saikifft(C a[],ll N,R sg){
+        if(N == 1)
+            return;
+        REP(i,N / 2){
+            a[i] += a[i + N / 2];
+        }
+        REP(i,N / 2){
+            a[i + N / 2] = a[i] - 2.0 * a[i + N / 2];
+            a[i + N / 2] *= C(cos(sg * 2.0 * M_PI * i / N),sin(sg * 2.0 * M_PI * i / N));
+        }
+        saikifft(a,N / 2,sg);
+        saikifft(a + N / 2,N / 2,sg);
+    }
+
+    int fft(C a[],ll n){
+        int N = 2,index = 1;;
+        while (n > N){
+            N *= 2;
+            index++;
+        }
+        saikifft(a,N,-1.0);
+        bitrev(a,N,index);
+        return N;
+    }
+    int refft(C a[],ll n){
+        int N = 2,index = 1;;
+        while (n > N){
+            N *= 2;
+            index++;
+        }
+        saikifft(a,N,1.0);
+        bitrev(a,N,index);
+        REP(i,N)
+            a[i] /= (R)N;
+        return N;
+    }
+
+    int convolution(ll a[],ll b[],ll c[],int n){
+        n *= 2;
+        int N = 2,index = 1;;
+        while (n > N){
+            N *= 2;
+            index++;
+        }
+        C *ac = (C*)malloc(N * sizeof(C));
+        C *bc = (C*)malloc(N * sizeof(C));
+        REP(i,N){
+            ac[i] = C((i < n / 2) ? a[i] : 0.0,0.0);
+            bc[i] = C((i < n / 2) ? b[i] : 0.0,0.0);
+        }
+        fft(ac,N);fft(bc,N);
+        REP(i,N)
+            ac[i] *= bc[i];
+        refft(ac,N);
+        REP(i,N)
+            c[i] = ac[i].real() + 0.01;
+        free(ac);free(bc);
+        return N;
+    }
+
+snippet     RmQ
+abbr        RmQ
+options     head
+    class RmQ{
+        private:
+            ll *st;
+            static const ll INF = 1000000000000000; 
+            ll N;
+            ll recursion_min(int i,int a,int b,int p,int q){//[a,b) [p,q)
+                if(a <= p && q <= b)
+                    return st[i];
+                if(b <= p || q <= a)
+                    return INF;
+
+                return min(recursion_min(i * 2,a,b,p,(p + q) / 2),recursion_min(i * 2 + 1,a,b,(p + q) / 2,q));
+            }
+
+        public: 
+            RmQ(int n){
+                N = 1;
+                while(N < n)
+                    N *= 2;
+                st = (ll*)malloc(N * 2 * sizeof(ll));
+                REP(i,N * 2)
+                    st[i + 1] = INF;
+            }
+
+            ll range_min(int a,int b){
+                if(a > b)
+                    swap(a,b);
+
+                if(a < 0)
+                    a = 0;
+                if(b > N)
+                    b = N - 1;
+
+                return recursion_min(1,a,b,0,N);
+            }
+
+            void update(int i,ll a){
+                i += N;
+                st[i] = a;
+                i /= 2;
+
+                while(i > 0){
+                    st[i] = min(st[i * 2],st[i * 2 + 1]);
+                    i /= 2;
+                }
+            }
+
+            void print(){
+                FOR(i,1,N * 2){
+                    if(__builtin_popcountll(i) == 1){
+                        printf("\n");
+                }
+                    printf("%lld ",st[i]);
+                }
+            }
+
+            ~RmQ(){
+                free(st);
+            }
+    };
+
+snippet     RMQ
+abbr        RMQ
+options     head
+    class RMQ{
+        private:
+            ll *st;
+            static const ll INF = 1000000000000000; 
+            ll N;
+            ll recursion_max(int i,int a,int b,int p,int q){//[a,b) [p,q)
+                if(a <= p && q <= b)
+                    return st[i];
+                if(b <= p || q <= a)
+                    return -INF;
+
+                return max(recursion_max(i * 2,a,b,p,(p + q) / 2),recursion_max(i * 2 + 1,a,b,(p + q) / 2,q));
+            }
+
+        public: 
+            RMQ(int n){
+                N = 1;
+                while(N < n)
+                    N *= 2;
+                st = (ll*)malloc(N * 2 * sizeof(ll));
+                REP(i,N * 2)
+                    st[i + 1] = -INF;
+            }
+
+            ll range_max(int a,int b){
+                if(a > b)
+                    swap(a,b);
+
+                if(a < 0)
+                    a = 0;
+                if(b > N)
+                    b = N - 1;
+
+                return recursion_max(1,a,b,0,N);
+            }
+
+            void update(int i,ll a){
+                i += N;
+                st[i] = a;
+                i /= 2;
+
+                while(i > 0){
+                    st[i] = max(st[i * 2],st[i * 2 + 1]);
+                    i /= 2;
+                }
+            }
+
+            void print(){
+                FOR(i,1,N * 2){
+                    if(__builtin_popcountll(i) == 1){
+                        printf("\n");
+                    }
+                    printf("%lld ",st[i]);
+                }
+            }
+
+            ~RMQ(){
+                free(st);
+            }
+    }; 

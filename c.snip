@@ -1,0 +1,212 @@
+snippet Gcd
+options head
+alias do
+abbr gcd(){}
+    typedef ${1:type} GCD_TYPE;
+    GCD_TYPE gcd(GCD_TYPE a,GCD_TYPE b){
+        if(b == 0)
+            return a;
+        return gcd(b,a % b);
+    }
+
+snippet     Extgcd
+abbr        Extgcd
+options     head
+    typedef ${1:type} EXTGCD_TYPE;
+    EXTGCD_TYPE extgcd(EXTGCD_TYPE a, EXTGCD_TYPE b, EXTGCD_TYPE& x, EXTGCD_TYPE& y) {
+        EXTGCD_TYPE d = a;
+        if (b != 0) {
+            d = extgcd(b, a % b, y, x);
+            y -= (a / b) * x;
+        } else {
+            x = 1; y = 0;
+        }
+        return d;
+    }
+
+
+snippet     Gridlim
+abbr        0 <= y && y < h &&...
+    if((0 <= ${1:y} && ${2:y} < ${3:h} && 0 <= ${4:x} && ${5:x} < ${6:w}) ${7:more conditions}){
+        ${0:TARGET}
+    }
+
+snippet     Mod_pow
+abbr        Mod_pow
+options     head
+    typedef ${1:type} MOD_POW_TYPE;
+    MOD_POW_TYPE mod_pow(MOD_POW_TYPE x, MOD_POW_TYPE n, MOD_POW_TYPE mod) {
+        MOD_POW_TYPE res = 1;
+        while (n > 0) {
+            if (n & 1) res = res * x % mod; // 最下位ビットが立っているときにx^(2^i)を掛ける
+            x = x * x % mod; // xを順次二乗していく
+            n >>= 1;
+        }
+        return res;
+    }
+
+
+snippet     Is_prime
+abbr        isprime
+options     head
+    typedef ${1:type} IS_PRIME_TYPE;
+    bool is_prime(IS_PRIME_TYPE n){
+        bool f = true;
+        if(n == 1) {
+            return 0;
+        }
+        if(n == 2)
+            return true;
+        if(n % 2 == 0)
+            return false;
+        for(IS_PRIME_TYPE i = 3;i <= (int)(sqrt(n) + 0.1);i += 2){
+            if(n % i == 0){
+                f = false;
+                break;
+            }
+        }
+        return f;
+    }
+
+snippet     Hurui
+abbr        hurui 
+options     head
+    typedef ${1:type} HURUI_TYPE;
+    void gethurui(bool hurui[],HURUI_TYPE n){
+        hurui[0] = hurui[1] = false;
+        for(HURUI_TYPE i = 2;i <= n;i++)
+            hurui[i] = true;
+        for(HURUI_TYPE i = 2;i <= int(sqrt(n) + 0.1);i++){
+            if(!hurui[i])
+                continue;
+            for(HURUI_TYPE j = i * 2;j <= n;j += i)
+                hurui[j] = false;
+        }
+    }
+
+snippet     Binsearch_double
+abbr        binsearch
+options     head
+    double binsearch_double(){
+        double lb = 0,ub = ${1:INF};
+
+        for(int i = 0;i < ${2:100};i++){
+            double mid = (lb + ub) / 2.0;
+            if(${3:C(mid)})${4:lb} = mid;
+            else ${5:ub} = mid;
+        }
+        return ${6:ub};
+    }
+
+snippet     Binsearch_i_max
+abbr        binsearch
+options     head
+    ll binsearch_i_max(){
+        ll lb = 0,ub = ${1:INF};//[lb,ub)が探索範囲
+
+        while(ub - lb > 1){
+            ll mid = (lb + ub) / 2;
+            if(C(mid))lb = mid;
+            else ub = mid;
+        }
+
+        return lb;
+    }
+
+snippet     Binsearch_i_min
+abbr        binsearch
+options     head
+    ll binsearch_i_min(){
+        ll lb = 0,ub = ${1:INF};//(lb,ub]が探索範囲
+
+        while(ub - lb > 1){
+            ll mid = (lb + ub) / 2;
+            if(C(mid))ub = mid;
+            else lb = mid;
+        }
+
+        return ub;
+    }
+
+snippet     Union-Find
+abbr        union-find
+options     head
+    int par[${1:MAX_N}];
+    int urank[${2:MAX_N}];
+    int size[${3:MAX_N}];
+
+    void init(int n) {//初期化、引数は要素数
+        for (int i = 0; i < n; i++) {
+            par[i] = i;
+            urank[i] = 0;
+            size[i] = 1;
+        }
+    }
+
+    int find(int x) {//木の根の添字
+        if (par[x] == x) {
+            return x;
+        } else {
+            return par[x] = find(par[x]);
+        }
+    }
+
+    int get_size(int x) {//xを含む集合の要素数
+        return size[find(x)];
+    }
+
+    void unite(int x, int y) {//xをyに併合
+        x = find(x);
+        y = find(y);
+        if (x == y) return;
+
+        int s = size[x] + size[y];
+        if (urank[x] < urank[y]) {
+            par[x] = y;
+            size[y] = s;
+        } else {
+            par[y] = x;
+            size[x] = s;
+            if (urank[x] == urank[y]) urank[x]++;
+        }
+    }
+
+    bool same(int x, int y) {//同じか判定
+        return find(x) == find(y);
+    }
+
+snippet     Combination
+abbr        combination
+options     head
+    ll gcd (ll a,ll b) {
+        if(b == 0)
+                return a;
+        return gcd(b,a % b);
+    }
+
+    ll C(ll n,ll m) {
+        if(n / 2 < m) {
+                m = n - m;
+        }
+
+        ll bunsi[m];
+
+        for(ll i = 0;i < m;i++) {
+                bunsi[i] = n - i;
+        }
+
+        for(ll i = 2;i <= m;i++) {
+                ll bunbo = i;
+                for(ll j = 0;j < m && bunbo > 1;j++) {
+                        ll g = gcd(bunbo,bunsi[j]);
+                        bunbo /= g;bunsi[j] /= g;
+                }
+        }
+
+        ll ret = 1;
+        for(ll i = 0;i < m;i++) {
+                ret *= bunsi[i];
+        }
+        return ret;
+    }
+
